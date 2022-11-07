@@ -29,13 +29,13 @@ def computePWM(speed):              # take an argument in range [-1,1]
 
 def sendLeft(mySpeed):          # takes at least 0.3 ms
     myPWM = computePWM(mySpeed)
-    left_chB.value = myPWM[0]
-    left_chA.value = myPWM[1]
+    left_chB.value = myPWM[1]
+    left_chA.value = myPWM[0]
 
 def sendRight(mySpeed):         # takes at least 0.3 ms
     myPWM = computePWM(mySpeed)
-    right_chB.value = myPWM[0]
-    right_chA.value = myPWM[1]
+    right_chB.value = myPWM[1]
+    right_chA.value = myPWM[0]
 
 # THIS LOOP ONLY RUNS IF THE PROGRAM IS CALLED DIRECTLY
 if __name__ == "__main__":
