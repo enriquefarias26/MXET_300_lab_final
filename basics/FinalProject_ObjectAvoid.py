@@ -1,8 +1,11 @@
 #creating program  to do object avoidance
 import numpy as np
-import time
 import L1_lidar as lidar
 import L1_motor as motor
+from time import sleep
+import ColorTracking as CTrack
+#import ServoControl as SControl
+
 
 np.set_printoptions(precision=3)                    # after math operations, don't print long values
 
@@ -23,46 +26,30 @@ def nearest(scan):                                  # find the nearest point in 
     vec = scan[row_index, :]                        # return the distance and angle of the nearest object in scan
     return vec                                      # contains [r, alpha]
 
-def polar2cart(r, alpha):                           # convert an individual vector to cartesian coordinates (in the robot frame)
-    alpha = np.radians(alpha)                       # alpha*(np.pi/180) # convert to radians
-    x = r * np.cos(alpha)                           # get x
-    y = r * np.sin(alpha)                           # get y
-    cart = np.round(np.array([x, y]), 3)            # vectorize and round
-    return cart
-
-def rotate(vec, theta):                             # describe a vector in global coordinates by rotating from body-fixed frame
-    c, s = np.cos(theta), np.sin(theta)             # define cosines & sines
-    R = np.array(((c, -s), (s, c)))                 # generate a rotation matrix
-    vecGlobal = np.matmul(R, vec)                   # multiply the two matrices
-    return vecGlobal
-
-def sumVec(vec, loc):                               # add two vectors. (origin to robot, robot to obstacle)
-    mySum = vec + loc                               # element-wise addition takes place
-    return mySum                                    # return [x,y]
-
 def getNearest():                                   # combine multiple functions into one.  Call to get nearest obstacle.
     scan = lidar.polarScan()                        # get a reading in meters and degrees
     valids = getValid(scan)                         # remove the bad readings
     vec = nearest(valids)                           # find the nearest
     return vec                                      # pass the closest valid vector [m, deg]
 
+
 if __name__ == "__main__":
     while True:
-        myVector = getNearest()                                 # call the function which utilizes several functions in this program
-        if myVector[0] <= 0.4 and myVector[1] >= 5:              #conditions if object is too close to the left
+        myVector = getNearest()                                                 # call the function which utilizes several functions in this program
+        if myVector[0] <= 0.4 and myVector[1] >= 5 and myVector[1] <= 90:       #conditions if object is too close to the left
             motor.sendLeft(-0.8)
             motor.sendRight(0.8)
-        elif myVector[0] <= 0.4 and myVector[1] <= -5:            #conditions if object is too close to the right
+        elif myVector[0] <= 0.4 and myVector[1] <= -5 and myVector[1] >= -90:   #conditions if object is too close to the right
             motor.sendLeft(0.8)
             motor.sendRight(-0.8)
-        elif myVector[0] <= 0.4 and myVector[1] < 5 and myVector[1] >= 0:     #condition if object is too close in front left, harder turn right
+        elif myVector[0] <= 0.4 and myVector[1] < 5 and myVector[1] >= 0:       #condition if object is too close in front left, turn 90ish degrees to the right
             motor.sendLeft(-0.8)
             motor.sendRight(0.8)
-            time.sleep(2)
-        elif myVector[0] <= 0.4 and myVector[1] > -5 and myVector[1] <= 0:     #condition if object is too close in front right, harder turn left
+            sleep(2)
+        elif myVector[0] <= 0.4 and myVector[1] > -5 and myVector[1] <= 0:      #condition if object is too close in front right, turn 90ish degrees to the left
             motor.sendLeft(0.8)
             motor.sendRight(-0.8)
-            time.sleep(2)
+            sleep(2)
         else:
             motor.sendLeft(0.8)
             motor.sendRight(0.8)

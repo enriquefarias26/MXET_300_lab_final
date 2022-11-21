@@ -101,25 +101,20 @@ def main():
                     # If error width is within acceptable margin
                     if abs(e_width) < width_margin:
                         sc.driveOpenLoop(np.array([0.,0.]))             # Stop when centered and aligned
-                        print("Aligned! ",w)
                         continue
 
                     fwd_effort = e_width/target_width                   
                     
                     wheel_speed = ik.getPdTargets(np.array([0.8*fwd_effort, -0.5*angle]))   # Find wheel speeds for approach and heading correction
                     sc.driveClosedLoop(wheel_speed, wheel_measured, 0)  # Drive closed loop
-                    print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
                     continue
 
                 wheel_speed = ik.getPdTargets(np.array([0, -1.1*angle]))    # Find wheel speeds for only turning
 
                 sc.driveClosedLoop(wheel_speed, wheel_measured, 0)          # Drive robot
-                print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
 
             else:
-                print("No targets")
-                sc.driveOpenLoop(np.array([0.,0.]))         # stop if no targets detected
-
+                pass
                 
     except KeyboardInterrupt: # condition added to catch a "Ctrl-C" event and exit cleanly
         pass
