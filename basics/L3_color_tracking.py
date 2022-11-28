@@ -38,10 +38,10 @@ fov = 1         # Camera field of view in rad (estimate)
 
 #    Color Range, described in HSV
 v1_min = 0      # Minimum H value
-v2_min = 50     # Minimum S value
-v3_min = 250      # Minimum V value
+v2_min = 115     # Minimum S value
+v3_min = 0      # Minimum V value
 
-v1_max = 255     # Maximum H value
+v1_max = 30     # Maximum H value
 v2_max = 255    # Maximum S value
 v3_max = 255    # Maximum V value
 

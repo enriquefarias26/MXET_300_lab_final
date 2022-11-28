@@ -38,10 +38,10 @@ fov = 1         # Camera field of view in rad (estimate)
 
 #    Color Range, described in HSV
 v1_min = 0      # Minimum H value
-v2_min = 50     # Minimum S value
-v3_min = 250      # Minimum V value
+v2_min = 0     # Minimum S value
+v3_min = 220      # Minimum V value
 
-v1_max = 255     # Maximum H value
+v1_max = 30     # Maximum H value
 v2_max = 255    # Maximum S value
 v3_max = 255    # Maximum V value
 
@@ -101,20 +101,25 @@ def main():
                     # If error width is within acceptable margin
                     if abs(e_width) < width_margin:
                         sc.driveOpenLoop(np.array([0.,0.]))             # Stop when centered and aligned
+                        print("Aligned! ",w)
                         continue
 
                     fwd_effort = e_width/target_width                   
                     
                     wheel_speed = ik.getPdTargets(np.array([0.8*fwd_effort, -0.5*angle]))   # Find wheel speeds for approach and heading correction
                     sc.driveClosedLoop(wheel_speed, wheel_measured, 0)  # Drive closed loop
+                    print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
                     continue
 
                 wheel_speed = ik.getPdTargets(np.array([0, -1.1*angle]))    # Find wheel speeds for only turning
 
                 sc.driveClosedLoop(wheel_speed, wheel_measured, 0)          # Drive robot
+                print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
 
             else:
-                pass
+                print("No targets")
+                sc.driveOpenLoop(np.array([0.,0.]))         # stop if no targets detected
+
                 
     except KeyboardInterrupt: # condition added to catch a "Ctrl-C" event and exit cleanly
         pass
