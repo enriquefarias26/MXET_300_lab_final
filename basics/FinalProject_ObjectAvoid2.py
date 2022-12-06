@@ -13,21 +13,24 @@ from math import radians, pi
 from gpiozero import Servo
 from time import sleep
 
-shots = 0
-servo1 = Servo(25) #servo1 for shooting
+import SignalReceiver as Sig
+
+
+servo1 = Servo(24) #servo1 for shooting
 val = -1
 
-servo2 = Servo(24) #servo2 for reloading
+servo2 = Servo(25) #servo2 for reloading
 
 def shoot():
 	servo1.value = val
 	sleep (0.6)
 	servo1.value = val + 2
 	sleep(0.6)
-def reload():
+def gunreload():
 	servo2.value = val
-	sleep(.01)
+	sleep(0.6)
 	servo2.value = val + 2
+	sleep(0.6)
 
 np.set_printoptions(precision=3)                    # after math operations, don't print long values
 
@@ -94,8 +97,11 @@ target_width = 100      # Target pixel width of tracked object
 angle_margin = 0.2      # Radians object can be from image center to be considered "centered"
 width_margin = 10       # Minimum width error to drive forward/back
 
+
+
 def main():
     # Try opening camera with default method
+    shots = 0
     try:
         camera = cv2.VideoCapture(0)    
     except: pass
@@ -130,28 +136,36 @@ def main():
             cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
                     cv2.CHAIN_APPROX_SIMPLE)[-2]                        # Find closed shapes in image
             
+            Sig.gotShot()
+            
             if len(cnts) and len(cnts) < 3:                             # If more than 0 and less than 3 closed shapes exist
 
                 motor.sendRight(0)
                 motor.sendLeft(0)
                 shoot()
-                sleep(1)
+                shots += 1
+                if shots == 12:
+                    gunreload()
+                    shots = 0
+                
+                
+                sleep(0.1)
                 continue
 
             else:
                 myVector = getNearest()                                                 # call the function which utilizes several functions in this program
                 sc.driveOpenLoop(np.array([0.,0.]))
-                if myVector[0] <= 0.4 and myVector[1] >= 5 and myVector[1] <= 90:       #conditions if object is too close to the left
+                if myVector[0] <= 0.5 and myVector[1] >= 5 and myVector[1] <= 90:       #conditions if object is too close to the left
                     motor.sendLeft(0.8)                                                #left wheel reverse
                     motor.sendRight(-0.8)                                                #right wheel forward
-                elif myVector[0] <= 0.4 and myVector[1] <= -5 and myVector[1] >= -90:   #conditions if object is too close to the right
+                elif myVector[0] <= 0.5 and myVector[1] <= -5 and myVector[1] >= -90:   #conditions if object is too close to the right
                     motor.sendLeft(-0.8)                                                 #left wheel forward
                     motor.sendRight(0.8)                                               #right wheel reverse
-                elif myVector[0] <= 0.4 and myVector[1] < 5 and myVector[1] >= 0:       #condition if object is too close in front left, turn 90ish degrees to the right
+                elif myVector[0] <= 0.5 and myVector[1] < 5 and myVector[1] >= 0:       #condition if object is too close in front left, turn 90ish degrees to the right
                     motor.sendLeft(0.8)                                                #left wheel reverse
                     motor.sendRight(-0.8)                                                #right wheel forward
                     sleep(2)                                                            #continue turn for 2 seconds
-                elif myVector[0] <= 0.4 and myVector[1] > -5 and myVector[1] <= 0:      #condition if object is too close in front right, turn 90ish degrees to the left
+                elif myVector[0] <= 0.5 and myVector[1] > -5 and myVector[1] <= 0:      #condition if object is too close in front right, turn 90ish degrees to the left
                     motor.sendLeft(-0.8)                                                 #left wheel forward
                     motor.sendRight(0.8)                                               #right wheel reverse
                     sleep(2)                                                            #continue turn for 2 seconds

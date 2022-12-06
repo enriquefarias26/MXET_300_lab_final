@@ -3,15 +3,23 @@ import L1_motor as motor
 from time import sleep
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(16,GPIO.IN)
+x=0
 
-int x
 def gotShot():
     if GPIO.input(16):
-        motor.sendright(0.8)
-        motor.sendleft('0.8)
-        sleep(0.8)
-        motor.sendright(0)
-        motor.sendleft(0)
-        x=1
-    else:
-        x=0
+        x = x+1
+        if x == 9:
+            motor.sendRight(0)
+            motor.sendLeft(0)
+            sleep(30)
+        else:
+            motor.sendRight(0)
+            motor.sendLeft(0)
+            sleep(0.8)
+            motor.sendRight(0.8)
+            motor.sendLeft(0.8)
+            sleep(0.8)
+            motor.sendRight(0)
+            motor.sendLeft(0)
+       
+       

@@ -13,6 +13,35 @@ import numpy as np
 import L1_ina as ina
 import L2_inverse_kinematics as ik
 import L2_speed_control as sc
+import SignalReceiver as sig
+
+from gpiozero import Servo
+
+servo1 = Servo(24) #servo1 for shooting
+val = -1
+
+servo2 = Servo(25) #servo2 for reloading
+
+def shoot():
+	servo1.value = val
+	sleep (0.6)
+	servo1.value = val + 2
+	sleep(0.6)
+def gunreload():
+	servo2.value = val
+	sleep(0.6)
+	servo2.value = val + 2
+	sleep(0.6)
+def shootLoop():
+    shots = 0
+    while True:
+        sig.gotShot()
+        shoot()
+        shots += 1
+        if shots == 12:
+            gunreload()
+            shots = 0
+        sleep(2)
 
 
 #UPD communication#
@@ -71,13 +100,15 @@ def main():
         
         try:
             while True:
-                sleep(0.2)                      #while the main thread sleeps, the two daemon threads will run asynchronously in parallel
+                sleep(0.2)    
+                                     #while the main thread sleeps, the two daemon threads will run asynchronously in parallel
         except:                     
             sc.driveOpenLoop((0,0))             #stop the robot if interrupted
 ## Runs only when L3_noderedControl.py is directly executed ##
 if __name__ == "__main__":                                          #must be main thread
     dashBoardDataUpdateThread.start()                               #start threads, from here their target functions will execute asynchronously
     controlThread.start()
+    shootLoop()
     
     
     try:
