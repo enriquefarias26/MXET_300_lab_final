@@ -4,7 +4,11 @@ from time import sleep
 import L1_lidar as lidar
 import L1_motor as motor
 import ManualControl as Manual
+<<<<<<< HEAD
 import FinalProject_ObjectAvoid2 as Auto
+=======
+import AutoMove as Auto
+>>>>>>> 96b28928150afb744564faa57482700821e9b0d5
 
 np.set_printoptions(precision=3)                    # after math operations, don't print long values
 
@@ -40,4 +44,8 @@ if __name__ == "__main__":
         elif choice == "2":
             Auto.main()
         else:
+<<<<<<< HEAD
             None
+=======
+            None
+>>>>>>> 96b28928150afb744564faa57482700821e9b0d5
