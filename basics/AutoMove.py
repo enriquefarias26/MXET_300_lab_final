@@ -32,20 +32,26 @@ def getNearest():                                   # combine multiple functions
 if __name__ == "__main__":
     while True:
         myVector = getNearest()                                                 # call the function which utilizes several functions in this program
-        if myVector[0] <= 0.4 and myVector[1] >= 5 and myVector[1] <= 90:       #conditions if object is too close to the left
-            motor.sendLeft(-0.8)
-            motor.sendRight(0.8)
-        elif myVector[0] <= 0.4 and myVector[1] <= -5 and myVector[1] >= -90:   #conditions if object is too close to the right
+        if myVector[0] <= 0.5 and myVector[1] >= 5 and myVector[1] <= 90:       #conditions if object is too close to the left
             motor.sendLeft(0.8)
             motor.sendRight(-0.8)
-        elif myVector[0] <= 0.4 and myVector[1] < 5 and myVector[1] >= 0:       #condition if object is too close in front left, harder turn right
+        elif myVector[0] <= 0.5 and myVector[1] <= -5 and myVector[1] >= -90:   #conditions if object is too close to the right
             motor.sendLeft(-0.8)
             motor.sendRight(0.8)
+        elif myVector[0] <= 0.5 and myVector[1] < 5 and myVector[1] >= 0:       #condition if object is too close in front left, harder turn right
+            motor.sendLeft(0.8)                                                #reverse for 1.5 seconds
+            motor.sendRight(0.8)
+            sleep(1.5)
+            motor.sendLeft(0.8)
+            motor.sendRight(-0.8)
             sleep(2)
-        elif myVector[0] <= 0.4 and myVector[1] > -5 and myVector[1] <= 0:      #condition if object is too close in front right, harder turn left
-            motor.sendLeft(0.8)
-            motor.sendRight(-0.8)
+        elif myVector[0] <= 0.5 and myVector[1] > -5 and myVector[1] <= 0:      #condition if object is too close in front right, harder turn left
+            motor.sendLeft(0.8)                                                #reverse for 1.5 seconds
+            motor.sendRight(0.8)
+            sleep(1.5)
+            motor.sendLeft(-0.8)
+            motor.sendRight(0.8)
             sleep(2)
         else:
-            motor.sendLeft(0.8)
-            motor.sendRight(0.8)
+            motor.sendLeft(-0.8)
+            motor.sendRight(-0.8)
