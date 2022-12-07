@@ -9,7 +9,6 @@ import L2_inverse_kinematics as ik
 import L2_kinematics as kin
 import netifaces as ni
 from math import radians, pi
-
 from gpiozero import Servo
 from time import sleep
 
@@ -102,6 +101,7 @@ width_margin = 10       # Minimum width error to drive forward/back
 def main():
     # Try opening camera with default method
     shots = 0
+    y=2
     try:
         camera = cv2.VideoCapture(0)    
     except: pass
@@ -139,12 +139,14 @@ def main():
             Sig.gotShot()
             
             if len(cnts) and len(cnts) < 3:                             # If more than 0 and less than 3 closed shapes exist
-
+                if y==1:
+                    gunreload()
+                y=0
                 motor.sendRight(0)
                 motor.sendLeft(0)
                 shoot()
                 shots += 1
-                if shots == 12:
+                if shots >= 12:
                     gunreload()
                     shots = 0
                 
@@ -153,25 +155,26 @@ def main():
                 continue
 
             else:
+                y=1
                 myVector = getNearest()                                                 # call the function which utilizes several functions in this program
                 sc.driveOpenLoop(np.array([0.,0.]))
-                if myVector[0] <= 0.5 and myVector[1] >= 5 and myVector[1] <= 90:       #conditions if object is too close to the left
-                    motor.sendLeft(0.8)                                                #left wheel reverse
-                    motor.sendRight(-0.8)                                                #right wheel forward
-                elif myVector[0] <= 0.5 and myVector[1] <= -5 and myVector[1] >= -90:   #conditions if object is too close to the right
-                    motor.sendLeft(-0.8)                                                 #left wheel forward
-                    motor.sendRight(0.8)                                               #right wheel reverse
-                elif myVector[0] <= 0.5 and myVector[1] < 5 and myVector[1] >= 0:       #condition if object is too close in front left, turn 90ish degrees to the right
-                    motor.sendLeft(0.8)                                                #left wheel reverse
-                    motor.sendRight(-0.8)                                                #right wheel forward
+                if myVector[0] <= 0.4 and myVector[1] >= 5 and myVector[1] <= 90:       #conditions if object is too close to the left
+                    motor.sendLeft(-0.8)                                                #left wheel reverse
+                    motor.sendRight(0.8)                                                #right wheel forward
+                elif myVector[0] <= 0.4 and myVector[1] <= -5 and myVector[1] >= -90:   #conditions if object is too close to the right
+                    motor.sendLeft(0.8)                                                 #left wheel forward
+                    motor.sendRight(-0.8)                                               #right wheel reverse
+                elif myVector[0] <= 0.4 and myVector[1] < 5 and myVector[1] >= 0:       #condition if object is too close in front left, turn 90ish degrees to the right
+                    motor.sendLeft(-0.8)                                                #left wheel reverse
+                    motor.sendRight(0.8)                                                #right wheel forward
                     sleep(2)                                                            #continue turn for 2 seconds
-                elif myVector[0] <= 0.5 and myVector[1] > -5 and myVector[1] <= 0:      #condition if object is too close in front right, turn 90ish degrees to the left
-                    motor.sendLeft(-0.8)                                                 #left wheel forward
-                    motor.sendRight(0.8)                                               #right wheel reverse
+                elif myVector[0] <= 0.4 and myVector[1] > -5 and myVector[1] <= 0:      #condition if object is too close in front right, turn 90ish degrees to the left
+                    motor.sendLeft(0.8)                                                 #left wheel forward
+                    motor.sendRight(-0.8)                                               #right wheel reverse
                     sleep(2)                                                            #continue turn for 2 seconds
                 else:
-                    motor.sendLeft(-0.8)                                                 #left wheel forward
-                    motor.sendRight(-0.8)                                                #right wheel forward
+                    motor.sendLeft(0.8)                                                 #left wheel forward
+                    motor.sendRight(0.8)                                                #right wheel forward
                 
     except KeyboardInterrupt: # condition added to catch a "Ctrl-C" event and exit cleanly
         pass
